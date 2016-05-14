@@ -1,41 +1,43 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
+import { RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS } from '@angular/router-deprecated';
 
-import { Hero } from './hero';
+import { HeroService }     from './hero.service';
+import { HeroesComponent } from './heroes.component';
 import { HeroDetailComponent } from './hero-detail.component';
-import { HeroService } from './hero.service';
+import { DashboardComponent } from './dashboard.component';
 
 @Component({
+    moduleId: module.id,
     selector: 'my-app',
     template: `
     <h1>{{ title }}</h1>
-    <h2>My Heroes</h2>
-    <ul class="heroes">
-        <li *ngFor="let hero of heroes" [class.selected]="hero===selectedHero" (click)="onSelect(hero)">
-            <span class="badge">{{hero.id}}</span> {{hero.name}}
-        </li>
-    </ul>
-    <my-hero-detail [hero]="selectedHero"></my-hero-detail>
+    <nav>
+        <a [routerLink]="['Dashboard']">Dashboard</a>
+        <a [routerLink]="['Heroes']">Heroes</a>
+    </nav>
+    <router-outlet></router-outlet>
     `,
-    styleUrls: ['../styles.css'],
-    directives: [HeroDetailComponent],
-    providers: [HeroService]
+    styleUrls: ['app.component.css'],
+    directives: [
+        ROUTER_DIRECTIVES
+    ],
+    providers: [
+        ROUTER_PROVIDERS,
+        HeroService
+    ] 
 })
-export class AppComponent implements OnInit {
-    title: string = 'Tour of Heroes';  
-    public heroes: Hero[];
-    selectedHero: Hero;
+@RouteConfig([
     
-    constructor(private _heroService: HeroService) {}
-
-    onSelect(hero:Hero) {
-        this.selectedHero = hero;
+    {
+        path: '/dashboard', name:'Dashboard', component: DashboardComponent, useAsDefault: true
+    },
+    {
+        path: '/heroes', name:'Heroes', component: HeroesComponent
+    },
+    {
+        path:'/detail/:id', 'name':'HeroDetail', component: HeroDetailComponent
     }
-    
-    getHeroes() {
-        this._heroService.getHeroes().then(heroes => this.heroes = heroes);
-    }
-    
-    ngOnInit() {
-        this.getHeroes();
-    }
+])
+export class AppComponent {
+    title = 'Tour of Heroes';
 }
